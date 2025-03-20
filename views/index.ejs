@@ -20,20 +20,20 @@
         </tr>
       </thead>
       <tbody>
-
-      </tbody>
-      <tfoot>
-
-      </tfoot>
-    </table>
-    <ul>
-      <%
-        customers.forEach(item => {
-          %>
-      <li><%= item.nome %></li>
           <%
-        })
-      %>
-    </ul>
+            customers.forEach(item => {
+              %>
+          <tr>
+            <td><%= item.nome %></td>
+            <td><%= item.idade %></td>
+            <td><%= item.cidade %> <%= item.uf %> </td>
+            <td></td>
+          </tr>
+              <%
+            })
+          %>
+      </tbody>
+    </table>
+
   </body>
 </html>

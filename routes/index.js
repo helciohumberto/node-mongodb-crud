@@ -9,7 +9,10 @@ router.get('/', (req, res, next) => {
       console.log(customers)
       res.render("index", {title: "Express", customers})
     })
-    .catch(error => console.log(error));
+    .catch(error => {
+      console.log(error);
+      res.render("error", {message: "Não foi possível listar os clientes", error});
+    });
 });
 
 router.get('/new', (req, res) => {
@@ -20,7 +23,10 @@ router.get('/edit/:customerId', (req, res) => {
   const id = req.params.customerId;
   db.findCustomer(id)
     .then(customer => res.render("customer", {title: "Edição de Cadastro", customer}))
-    .catch(error => console.log(error));
+    .catch(error => {
+      console.log(error);
+      res.render("error", {message: "Não foi possível retornar os dados do cliente", error})
+    });
   
 })
 
@@ -28,7 +34,10 @@ router.get('/delete/:customerId', (req, res) => {
   const id = req.params.customerId;
   db.deleteCustomer(id)
     .then(result => res.redirect('/'))
-    .catch(error => console.log(error));
+    .catch(error => {
+      console.log(error);
+      res.render("error", {message: "Não foi possível excluir o cliente", error})
+    });
 });
 
 router.post('/new', (req, res) => {
@@ -56,6 +65,7 @@ router.post('/new', (req, res) => {
     })
     .catch(error => {
       return console.log(error);
+      res.render("error", {message: "Não foi possível salvar o cliente", error})
     });
 });
 

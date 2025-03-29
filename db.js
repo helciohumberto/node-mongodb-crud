@@ -2,10 +2,18 @@ require('dotenv').config();
 const { MongoClient, ObjectId } = require("mongodb");
 
 async function connect() {
+    if(global.connection) return global.connection;
+
     const client = new MongoClient(process.env.MONGO_URI);
-    await client.connect();
-    global.connection = client.db();
-    console.log("Connected to MongoDB!");
+
+    try{
+        await client.connect();
+        global.connection = client.db();
+        console.log("Connected to MongoDB!");
+    } catch(err){
+        console.log(err);
+        global.connection = null;
+    }
 }
 
 connect();

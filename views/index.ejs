@@ -31,6 +31,9 @@
               <a href="/edit/<%= item._id %>" title="Editar">
                 <img src="/images/edit.png" alt="">
               </a>
+              <a href="/delete/<%= item._id %>" title="Excluir" onclick="return confirm('Tem certeza que deseja escluir este cliente?')">
+                <img src="/images/delete.png" alt="">
+              </a>
             </td>
           </tr>
               <%

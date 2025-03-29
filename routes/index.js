@@ -24,6 +24,13 @@ router.get('/edit/:customerId', (req, res) => {
   
 })
 
+router.get('/delete/:customerId', (req, res) => {
+  const id = req.params.customerId;
+  db.deleteCustomer(id)
+    .then(result => res.redirect('/'))
+    .catch(error => console.log(error));
+});
+
 router.post('/new', (req, res) => {
 
   if(!req.body.nome)

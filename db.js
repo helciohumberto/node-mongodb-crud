@@ -1,5 +1,7 @@
 require('dotenv').config();
+
 const { MongoClient, ObjectId } = require("mongodb");
+const PAGE_SIZE = 5;
 
 async function connect() {
     if(global.connection) return global.connection;
@@ -16,12 +18,21 @@ async function connect() {
     }
 }
 
-connect();
 
-function findCustomers() {
+async function countCustomers() {
+    const connection = await connect();
+    return connection
+           .collection("clientes")
+           .countDocuments();
+}
+
+function findCustomers(page = 1) {
+    const totalSkip = (page - 1) * PAGE_SIZE;
     return global.connection
         .collection("clientes")
         .find({})
+        .skip(totalSkip)
+        .limit(PAGE_SIZE)
         .toArray();
 }
 
@@ -52,10 +63,67 @@ function deleteCustomer(id){
                  .deleteOne({ _id: objectId });
 }
 
+
+
+//usuarios
+
+async function countUsers() {
+    const connection = await connect();
+    return connection
+           .collection("usuarios")
+           .countDocuments();
+}
+
+function findUsers(page = 1) {
+    const totalSkip = (page - 1) * PAGE_SIZE;
+    return global.connection
+        .collection("usuarios")
+        .find({})
+        .skip(totalSkip)
+        .limit(PAGE_SIZE)
+        .toArray();
+}
+
+function findUser(id){
+    const objectId = new ObjectId(id);
+    return global.connection
+                 .collection("usuarios")
+                 .findOne({_id: objectId});
+}
+
+function insertUser(user){
+    return global.connection
+                 .collection("usuarios")
+                 .insertOne(user);
+}
+
+function updateUser(id, user){
+    const objectId = ObjectId.createFromHexString(id);
+    return global.connection
+                 .collection("usuarios")
+                 .updateOne({ _id: objectId }, { $set: user });
+}
+
+function deleteUser(id){
+    const objectId = ObjectId.createFromHexString(id);
+    return global.connection
+                 .collection("usuarios")
+                 .deleteOne({ _id: objectId });
+}
+
 module.exports = { 
+    PAGE_SIZE,
     findCustomers,
     insertCustomer,
     updateCustomer,
     deleteCustomer,
-    findCustomer
+    findCustomer,
+    countCustomers,
+    countUsers,
+    findUsers,
+    findUser,
+    insertUser,
+    updateUser,
+    deleteUser,
+    connect
 };

@@ -52,7 +52,7 @@ router.post('/new', (req, res) => {
 
   promise
     .then(result => {
-      res.redirect("/users");
+      res.redirect("/");
     })
     .catch(error => {
       return console.log(error);

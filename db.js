@@ -1,114 +1,109 @@
 require('dotenv').config();
 
 const { MongoClient, ObjectId } = require("mongodb");
+const bcrypt = require('bcryptjs')
+
 const PAGE_SIZE = 5;
+let db = null;
 
 async function connect() {
-    if(global.connection) return global.connection;
+    if (db) return db; 
 
-    const client = new MongoClient(process.env.MONGO_URI);
+    const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-    try{
+    try {
         await client.connect();
-        global.connection = client.db();
-        console.log("Connected to MongoDB!");
-    } catch(err){
-        console.log(err);
-        global.connection = null;
+        db = client.db("luiztools"); 
+        console.log("Conectado ao MongoDB!");
+        return db;
+    } catch (err) {
+        console.error("Erro ao conectar ao MongoDB:", err);
+        db = null;
+        throw err;
     }
 }
 
 
 async function countCustomers() {
     const connection = await connect();
-    return connection
-           .collection("clientes")
-           .countDocuments();
+    return connection.collection("clientes").countDocuments();
 }
 
-function findCustomers(page = 1) {
+async function findCustomers(page = 1) {
+    const connection = await connect();
     const totalSkip = (page - 1) * PAGE_SIZE;
-    return global.connection
-        .collection("clientes")
-        .find({})
-        .skip(totalSkip)
-        .limit(PAGE_SIZE)
-        .toArray();
+    return connection.collection("clientes")
+                     .find({})
+                     .skip(totalSkip)
+                     .limit(PAGE_SIZE)
+                     .toArray();
 }
 
-function findCustomer(id){
+async function findCustomer(id) {
+    const connection = await connect();
     const objectId = new ObjectId(id);
-    return global.connection
-                 .collection("clientes")
-                 .findOne({_id: objectId});
+    return connection.collection("clientes").findOne({ _id: objectId });
 }
 
-function insertCustomer(customer){
-    return global.connection
-                 .collection("clientes")
-                 .insertOne(customer);
+async function insertCustomer(customer) {
+    const connection = await connect();
+    return connection.collection("clientes").insertOne(customer);
 }
 
-function updateCustomer(id, customer){
-    const objectId = ObjectId.createFromHexString(id);
-    return global.connection
-                 .collection("clientes")
-                 .updateOne({ _id: objectId }, { $set: customer });
+async function updateCustomer(id, customer) {
+    const connection = await connect();
+    const objectId = new ObjectId(id);
+    return connection.collection("clientes").updateOne({ _id: objectId }, { $set: customer });
 }
 
-function deleteCustomer(id){
-    const objectId = ObjectId.createFromHexString(id);
-    return global.connection
-                 .collection("clientes")
-                 .deleteOne({ _id: objectId });
+async function deleteCustomer(id) {
+    const connection = await connect();
+    const objectId = new ObjectId(id);
+    return connection.collection("clientes").deleteOne({ _id: objectId });
 }
 
-
-
-//usuarios
-
+// usuários
 async function countUsers() {
     const connection = await connect();
-    return connection
-           .collection("usuarios")
-           .countDocuments();
+    return connection.collection("usuarios").countDocuments();
 }
 
-function findUsers(page = 1) {
+async function findUsers(page = 1) {
+    const connection = await connect();
     const totalSkip = (page - 1) * PAGE_SIZE;
-    return global.connection
-        .collection("usuarios")
-        .find({})
-        .skip(totalSkip)
-        .limit(PAGE_SIZE)
-        .toArray();
+    return connection.collection("usuarios")
+                     .find({})
+                     .skip(totalSkip)
+                     .limit(PAGE_SIZE)
+                     .toArray();
 }
 
-function findUser(id){
+async function findUser(id) {
+    const connection = await connect();
     const objectId = new ObjectId(id);
-    return global.connection
-                 .collection("usuarios")
-                 .findOne({_id: objectId});
+    return connection.collection("usuarios").findOne({ _id: objectId });
 }
 
-function insertUser(user){
-    return global.connection
-                 .collection("usuarios")
-                 .insertOne(user);
+async function insertUser(user) {
+    user.senha = bcrypt.hashSync(user.senha, 12);
+
+    const connection = await connect();
+    return connection.collection("usuarios").insertOne(user);
 }
 
-function updateUser(id, user){
-    const objectId = ObjectId.createFromHexString(id);
-    return global.connection
-                 .collection("usuarios")
-                 .updateOne({ _id: objectId }, { $set: user });
+async function updateUser(id, user) {
+    if(user.senha)
+       user.senha = bcrypt.hashSync(user.senha, 12);
+
+    const connection = await connect();
+    const objectId = new ObjectId(id);
+    return connection.collection("usuarios").updateOne({ _id: objectId }, { $set: user });
 }
 
-function deleteUser(id){
-    const objectId = ObjectId.createFromHexString(id);
-    return global.connection
-                 .collection("usuarios")
-                 .deleteOne({ _id: objectId });
+async function deleteUser(id) {
+    const connection = await connect();
+    const objectId = new ObjectId(id);
+    return connection.collection("usuarios").deleteOne({ _id: objectId });
 }
 
 module.exports = { 

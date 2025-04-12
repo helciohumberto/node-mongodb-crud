@@ -1,10 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
 const auth = require('../auth');
 const db = require('../db');
 const sendMail = require('../mail');
+const passport = require('passport');
 
 /* GET home page. */
 router.get('/', (req, res) => {
@@ -47,23 +47,9 @@ router.post('/forgot', async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
-
-    const nome = req.body.nome;
-    const user = await auth.findUserByName(nome);
-    
-    if (!user) 
-      return res.render("login", { title: "Login", message: "Usuário ou senha inválidos" });
-    
-    const senha = req.body.senha;
-    
-    if (!bcrypt.compareSync(senha, user.senha)) 
-      return res.render("login", { title: "Login", message: "Preencha todos os campos" });
-    
-
-
-    res.redirect("/index");
-
-});
+router.post('/login', passport.authenticate("local", {
+  successRedirect: "/index",
+  failureRedirect: "/?message=Usuário e/ou senha inválidos"
+}))
 
 module.exports = router;

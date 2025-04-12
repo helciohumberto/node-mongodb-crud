@@ -3,7 +3,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const auth = require('../auth');
-const db = require('../db')
+const db = require('../db');
+const sendMail = require('../mail');
 
 /* GET home page. */
 router.get('/', (req, res) => {
@@ -26,9 +27,24 @@ router.post('/forgot', async (req, res) => {
   const newPassword = auth.generatePassword();
   user.senha = newPassword;
   
-  await db.updateUser(user._id.toString(), user);
+  try{
 
-  res.render("forgot", { title: "Recuperação de Senha", message: newPassword });
+    await db.updateUser(user._id.toString(), user);
+    await sendMail(user.email, "Senha alterada com sucesso", `
+      Olá ${user.nome}!
+      sua senha foi alterada com sucesso para ${newPassword}.
+  
+      Use-a para se autenticar novamente em http://localhost:3000/
+  
+      Att.
+  
+      Admin
+      `) 
+      res.render("login", { title: "Login", message: "Verifique sua caixa de email para pegar a nova senha" });
+    }
+    catch(err){
+      res.render("forgot", { title: "Recuperação de Senha", message: err.message });
+    }
 });
 
 router.post('/login', async (req, res) => {

@@ -15,6 +15,12 @@ router.get('/forgot', (req, res) => {
   res.render("forgot", { title: "Recuperação de Senha", message: "" });
 });
 
+router.post("/logout", (req, res, next) => {
+  req.logOut(() => {
+    res.redirect("/")
+  })
+})
+
 router.post('/forgot', async (req, res) => {
   const email = req.body.email;
   if(!email) 

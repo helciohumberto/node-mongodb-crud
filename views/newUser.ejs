@@ -1,55 +1,51 @@
 <%- include("top.ejs") %>
-    <link rel="stylesheet" href="/stylesheets/customer.css">
-    <p>Preencha os campos abaixo para cadastrar ou editar um usuário.</p>
-    <form action="/users/new" method="POST">
+<link rel="stylesheet" href="/stylesheets/customer.css">
 
-      <div class="row mb-3">
-        <div class="form-group">
-          <label for="nome">Nome:</label>
-          <input type="text" 
-                 name="nome" 
-                 value="<%= user.nome %>" 
-                 class="form-control" 
-                 placeholder="Nome do usuário"
-            />
-        </div>
-      </div>
+<p>Preencha os campos abaixo para cadastrar ou editar um usuário.</p>
 
-      <div class="row mb-3">
-        <div class="form-group">
-          <label for="email">E-mail:</label>
-          <input type="text" 
-                 name="email" 
-                 value="<%= user.email %>" 
-                 class="form-control" 
-                 placeholder="E-mail do usuário"
-           />
-        </div>
-      </div>
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert alert-danger">
+    <%= error %>
+  </div>
+<% } %>
 
-      <div class="row mb-3">
-        <div class="form-group">
-          <label for="senha">Senha:</label>
-          <input type="password" 
-                 name="senha" 
-                 value="" 
-                 class="form-control" 
-                 placeholder="Senha do usuário"
-           />
-        </div>
-      </div>
+<form action="/users/new" method="POST">
+  <div class="row mb-3">
+    <div class="form-group">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" value="<%= user.nome %>" class="form-control" placeholder="Nome do usuário" />
+    </div>
+  </div>
 
-        <input type="hidden" name="id" value="<%= user._id %>" />
-        <p>
-          <input type="submit" value="Salvar" class="btn btn-primary"/>
-          <a href="/users" class="btn btn-secondary">Cancelar</a>
-        </p>
-  
-    </form>
-    <script>
-      if(window.location.search){
-          const error = window.location.search.split('=')[1];
-          alert(decodeURI(error));
-      }
-    </script>
- <%- include("bottom.ejs") %>
+  <div class="row mb-3">
+    <div class="form-group">
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" name="email" value="<%= user.email %>" class="form-control" placeholder="E-mail do usuário" />
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="form-group">
+      <label for="senha">Senha:</label>
+      <input type="password" id="senha" name="senha" class="form-control" placeholder="Senha do usuário" />
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="form-group">
+      <label for="perfil">Perfil:</label>
+      <select name="perfil" id="perfil" class="form-control">
+        <option value="1" <%= user.perfil == 1 ? "selected" : "" %>>Usuário Comum</option>
+        <option value="2" <%= user.perfil == 2 ? "selected" : "" %>>Usuário Administrador</option>
+      </select>
+    </div>
+  </div>
+
+  <input type="hidden" name="id" value="<%= user._id %>" />
+  <p>
+    <input type="submit" value="Salvar" class="btn btn-primary"/>
+    <a href="/users" class="btn btn-secondary">Cancelar</a>
+  </p>
+</form>
+
+<%- include("bottom.ejs") %>

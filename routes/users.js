@@ -41,7 +41,8 @@ router.post('/new', (req, res) => {
   
   const nome = req.body.nome;
   const email = req.body.email;
-  const user = { nome, email };
+  const perfil = req.body.perfil;
+  const user = { nome, email, perfil };
 
   if(req.body.senha)
     user.senha = req.body.senha;
@@ -52,7 +53,7 @@ router.post('/new', (req, res) => {
 
   promise
     .then(result => {
-      res.redirect("/");
+      res.redirect("/users");
     })
     .catch(error => {
       return console.log(error);

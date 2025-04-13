@@ -1,31 +1,25 @@
-const {connect} = require('./db');
+const db = require('./db');
 
-async function findUserByName(nome){
-    const connection = await connect();
-    return connection
-           .collection("usuarios")
-           .findOne({nome});
+function generatePassword(length = 8) {
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let password = "";
+  for (let i = 0; i < length; ++i)
+    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  return password;
 }
 
-async function findUserByEmail(email){
-    const connection = await connect();
-    return connection
-           .collection("usuarios")
-           .findOne({email});
+async function findUserByEmail(email) {
+  const connection = await db.connect();
+  return connection.collection("usuarios").findOne({ email });
 }
 
-function generatePassword(){
-    const chars = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let senha = "";
-
-    for(let i=0; i < 10; i++)
-        senha += chars.charAt(Math.random() * 61);
-    return senha
-    
+async function findUserByName(nome) {
+  const connection = await db.connect();
+  return connection.collection("usuarios").findOne({ nome });
 }
 
 module.exports = {
-    findUserByName,
-    findUserByEmail,
-    generatePassword
-}
+  generatePassword,
+  findUserByEmail,
+  findUserByName
+};
